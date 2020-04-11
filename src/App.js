@@ -5,44 +5,98 @@ import AddedFeatures from './components/AddedFeatures';
 import AdditionalFeatures from './components/AdditionalFeatures';
 import Total from './components/Total';
 
-const App = () => {
-  const state = {
-    additionalPrice: 0,
-    car: {
-      price: 26395,
-      name: '2019 Ford Mustang',
-      image:
-        'https://cdn.motor1.com/images/mgl/0AN2V/s1/2019-ford-mustang-bullitt.jpg',
-      features: []
-    },
-    additionalFeatures: [
-      { id: 1, name: 'V-6 engine', price: 1500 },
-      { id: 2, name: 'Racing detail package', price: 1500 },
-      { id: 3, name: 'Premium sound system', price: 500 },
-      { id: 4, name: 'Rear spoiler', price: 250 }
-    ]
-  };
+import {connect} from "react-redux"
+
+import {addFeature,removeFeature,removeFeatureBack,addFeatureBack} from "./actions"
+
+
+const App = (props) => {
+ 
+  //console.log("carFeaturesData Check",  sortObj(props.carFeaturesData))
+
+
+    function sortObj (recObj) {
+      return{
+
+        ...recObj,
+        additionalFeatures: recObj.additionalFeatures.sort(
+          function (a, b) {
+            return a.id - b.id;
+          })
+         
+       
+        
+        
+        
+        
+        
+        
+        
+      }
+      }
+      
+
+
+   
 
   const removeFeature = item => {
     // dispatch an action here to remove an item
+   // console.log("Remove Feature", item)
+   props.removeFeature (item)
+   props.addFeatureBack(item)
+   props.removeFeatureBack(item)
+    
   };
 
   const buyItem = item => {
-    // dipsatch an action here to add an item
-  };
+    
+   // console.log("ADD Feature", item)
+    props.addFeature(item)
+    props.removeFeature (item)
 
+  };
+ 
   return (
     <div className="boxes">
       <div className="box">
-        <Header car={state.car} />
-        <AddedFeatures car={state.car} />
+        <Header car={props.carData.car} />
+        <AddedFeatures removeFeature={removeFeature} car={props.carData.car} />
       </div>
       <div className="box">
-        <AdditionalFeatures additionalFeatures={state.additionalFeatures} />
-        <Total car={state.car} additionalPrice={state.additionalPrice} />
+        <AdditionalFeatures buyItem={buyItem} additionalFeatures={  sortObj(props.carFeaturesData).additionalFeatures} />
+        <Total car={props.carData.car} additionalPrice={props.carFeaturesData.additionalPrice} />
       </div>
     </div>
   );
+   
 };
 
-export default App;
+const mapStateToProps = (globalState) => {
+return{
+  carData : globalState.carsReducer,
+  carFeaturesData : globalState.carFeaturesReducer
+}
+}
+export default  connect(mapStateToProps,{addFeature,removeFeature,addFeatureBack,removeFeatureBack})(App);
+
+
+
+
+
+
+// console.log("carFeaturesData Check",  sortObj("hey"))
+//     const sortObj = (recObj) => {
+//       return{
+//         recObj
+//       }
+//       }
+
+
+// console.log("carFeaturesData Check",  sortObj("hey"))
+// function sortObj (recObj) {
+//   return{
+//     recObj
+//   }
+//   }
+
+
